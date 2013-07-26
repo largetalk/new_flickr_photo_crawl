@@ -98,8 +98,8 @@ class FlickrSpider(CrawlSpider):
 
         item = PhotoItem()
         item['web_url'] = response.url
-        photo_id =  response.url.split('/')[-3]
-        set_id = response.url.split('/')[-1][4:]
+        photo_id =  response.url.split('/')[-4]
+        set_id = response.url.split('/')[-2][4:]
         item['photo_id'] = photo_id
         item['name'] = hxs.select("//h1[@id='title_div']/text()").extract()[0]
         item['set_id'] = set_id
@@ -126,7 +126,7 @@ class FlickrSpider(CrawlSpider):
         yield Request(url=download_url, callback=self.real_download)
 
     def real_download(self, response):
-        photo_id = re.findall('/photos/\w+/(\d+)/sizes/o/in/\w+/', response.request.headers['Referer'])[0]
+        photo_id = re.findall('/photos/\w+/(\d+)/sizes/o/in/', response.request.headers['Referer'])[0]
         cu = self.conn.cursor()
         sql = "select photo_id, web_url, name, set_id, set_name, osize_url from photos where photo_id = %s" % photo_id
         cu.execute(sql)
